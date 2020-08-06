@@ -16,6 +16,7 @@ option(LOVR_ENABLE_TIMER "Enable the timer module" ON)
 
 option(LOVR_ENABLE_ENET "Bundle with lua-enet" ON)
 option(LOVR_ENABLE_JSON "Bundle with lua-cjson" ON)
+option(LOVR_ENABLE_XXHASH "Bundle with lua-xxhash (XXH32)" ON)
 
 option(LOVR_USE_LUAJIT "Use LuaJIT instead of Lua" ON)
 option(LOVR_USE_OPENVR "Enable the OpenVR backend for the headset module" ON)
@@ -360,6 +361,16 @@ target_link_libraries(lovr
   ${LOVR_PTHREADS}
   ${LOVR_EMSCRIPTEN_FLAGS}
 )
+
+# Note: Before LOVR_ENABLE_DATA, as l_data_blob.c adds an xxhash func if the define is present
+if(LOVR_ENABLE_XXHASH)
+  add_definitions(-DLOVR_ENABLE_XXHASH)
+  include_directories(deps/lua-xxhash/src)
+  target_sources(lovr PRIVATE
+    deps/lua-xxhash/src/xxhash_bind.c
+    deps/lua-xxhash/src/xxhash.c
+  )
+endif()
 
 if(LOVR_ENABLE_AUDIO)
   add_definitions(-DLOVR_ENABLE_AUDIO)

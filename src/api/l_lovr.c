@@ -3,6 +3,7 @@
 #include "core/util.h"
 #include "lib/lua-cjson/lua_cjson.h"
 #include "lib/lua-enet/enet.h"
+#include "lib/lua-xxhash-bind-h/xxhash_bind.h"
 
 const luaL_Reg lovrModules[] = {
   { "lovr", luaopen_lovr },
@@ -41,6 +42,9 @@ const luaL_Reg lovrModules[] = {
 #endif
 #ifdef LOVR_ENABLE_ENET
   { "enet", luaopen_enet },
+#endif
+#ifdef LOVR_ENABLE_XXHASH
+  { "xxhash", luaopen_xxhash },
 #endif
   { NULL, NULL }
 };
