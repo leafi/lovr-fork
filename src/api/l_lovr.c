@@ -4,6 +4,7 @@
 #include "lib/lua-cjson/lua_cjson.h"
 #include "lib/lua-enet/enet.h"
 #include "lib/lua-xxhash-bind-h/xxhash_bind.h"
+#include "lib/lua-bitop/lua-bitop.h"
 
 const luaL_Reg lovrModules[] = {
   { "lovr", luaopen_lovr },
@@ -45,6 +46,10 @@ const luaL_Reg lovrModules[] = {
 #endif
 #ifdef LOVR_ENABLE_XXHASH
   { "xxhash", luaopen_xxhash },
+#endif
+#ifdef LOVR_ENABLE_LUA_BITOP
+  /* used when building with Lua 5.1 to provide bit.* library, like LuaJIT */
+  { "bit", luaopen_bit },
 #endif
   { NULL, NULL }
 };
