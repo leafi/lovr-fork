@@ -1,3 +1,18 @@
+# This is a personal fork of the LÖVR engine.
+
+## Changes:
+
+- Bundled mah0x211/lua-xxhash (XXH32): xxhash.xxh32(str, seed), xxhash.init(), Blob:xxh32(seed) added
+- Bundled lutf8lib.h from lua-compat-5.3: utf8 lib (like Lua 5.3) added
+- Bundled LuaBitOp (bit32) ONLY when using Lua 5.1 interpreter
+- Added lovr.graphics.disableScissor(), lovr.graphics.isScissorEnabled, lovr.graphics.setScissor(x,y,w,h)
+- Add rebuild.sh with the settings I wish to use (disable vr & enet)
+- ???
+
+**NOTE:** Tupfile, Tuprules etc. are **NOT** updated - only CMakeLists.
+
+**NOTE #2:** The main branch is semi-regularly rebased upon upstream. Sorry if you expected 'git pull' to work for updates...
+
 <p align="center"><a href="https://lovr.org"><img src="https://lovr.org/static/img/README.png" width="256"/></a></p>
 
 # LÖVR
