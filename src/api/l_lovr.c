@@ -5,6 +5,7 @@
 #include "lib/lua-enet/enet.h"
 #include "lib/lua-xxhash-bind-h/xxhash_bind.h"
 #include "lib/lua-bitop/lua-bitop.h"
+#include "lib/lua-compat-5.3-utf8/lutf8lib.h"
 
 const luaL_Reg lovrModules[] = {
   { "lovr", luaopen_lovr },
@@ -43,6 +44,9 @@ const luaL_Reg lovrModules[] = {
 #endif
 #ifdef LOVR_ENABLE_ENET
   { "enet", luaopen_enet },
+#endif
+#ifdef LOVR_ENABLE_UTF8
+  { "utf8", luaopen_compat53_utf8 },
 #endif
 #ifdef LOVR_ENABLE_XXHASH
   { "xxhash", luaopen_xxhash },
