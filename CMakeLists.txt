@@ -17,6 +17,7 @@ option(LOVR_ENABLE_TIMER "Enable the timer module" ON)
 option(LOVR_ENABLE_ENET "Bundle with lua-enet" ON)
 option(LOVR_ENABLE_JSON "Bundle with lua-cjson" ON)
 option(LOVR_ENABLE_XXHASH "Bundle with lua-xxhash (XXH32)" ON)
+option(LOVR_ENABLE_UTF8 "Bundle with lua-compat-5.3 utf8 lib backport" ON)
 
 option(LOVR_USE_LUAJIT "Use LuaJIT instead of Lua" ON)
 option(LOVR_USE_OPENVR "Enable the OpenVR backend for the headset module" ON)
@@ -368,6 +369,15 @@ if(NOT(LOVR_USE_LUAJIT AND NOT EMSCRIPTEN))
   add_definitions(-DLOVR_ENABLE_LUA_BITOP)
   target_sources(lovr PRIVATE
     src/lib/lua-bitop/bit.c
+  )
+endif()
+
+if(LOVR_ENABLE_UTF8)
+  add_definitions(-DLOVR_ENABLE_UTF8)
+  include_directories(src/lib/lua-compat-5.3-utf8)
+  target_sources(lovr PRIVATE
+    src/lib/lua-compat-5.3-utf8/lutf8lib.c
+#    src/lib/lua-compat-5.3-utf8/c-api/compat-5.3.c
   )
 endif()
 
