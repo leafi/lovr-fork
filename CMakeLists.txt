@@ -373,6 +373,15 @@ target_link_libraries(lovr
   ${LOVR_EMSCRIPTEN_FLAGS}
 )
 
+# BitOp module for increased Lua 5.1<->LuaJIT compatibility
+if(NOT(LOVR_USE_LUAJIT AND NOT EMSCRIPTEN))
+  # just using Lua 5.1, so let's import LuaBitOp!
+  add_definitions(-DLOVR_ENABLE_LUA_BITOP)
+  target_sources(lovr PRIVATE
+    src/lib/lua-bitop/bit.c
+  )
+endif()
+
 # Note: Before LOVR_ENABLE_DATA, as l_data_blob.c adds an xxhash func if the define is present
 if(LOVR_ENABLE_XXHASH)
   add_definitions(-DLOVR_ENABLE_XXHASH)
