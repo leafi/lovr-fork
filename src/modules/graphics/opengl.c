@@ -170,6 +170,8 @@ static struct {
   bool depthWrite;
   float lineWidth;
   uint32_t primitiveRestart;
+  uint32_t scissorXY;
+  uint32_t scissorWH;
   bool stencilEnabled;
   CompareMode stencilMode;
   int stencilValue;
@@ -1033,6 +1035,25 @@ static void lovrGpuBindPipeline(Pipeline* pipeline) {
     glLineWidth(state.lineWidth);
   }
 
+  // Scissor test (& rectangle)
+  if (state.scissorXY != pipeline->scissorXY || state.scissorWH != pipeline->scissorWH) {
+    if ((pipeline->scissorXY | pipeline->scissorWH) == 0) {
+      glDisable(GL_SCISSOR_TEST);
+    } else {
+      if ((state.scissorXY | state.scissorWH) == 0) {
+        glEnable(GL_SCISSOR_TEST);
+      }
+      glScissor(
+        (GLint)((pipeline->scissorXY >> 16) & 0xffff),
+        (GLint)(pipeline->scissorXY & 0xffff),
+        (GLsizei)((pipeline->scissorWH >> 16) & 0xffff),
+        (GLsizei)(pipeline->scissorWH & 0xffff)
+      );
+    }
+    state.scissorXY = pipeline->scissorXY;
+    state.scissorWH = pipeline->scissorWH;
+  }
+
   // Stencil mode
   if (!state.stencilWriting && (state.stencilMode != pipeline->stencilMode || state.stencilValue != pipeline->stencilValue)) {
     state.stencilMode = pipeline->stencilMode;
@@ -1323,6 +1344,10 @@ void lovrGpuInit(void* (*getProcAddress)(const char*), bool debug) {
 
   state.lineWidth = 1.f;
   glLineWidth(state.lineWidth);
+
+  state.scissorXY = 0;
+  state.scissorWH = 0;
+  glDisable(GL_SCISSOR_TEST);
 
   state.stencilEnabled = false;
   state.stencilMode = COMPARE_NONE;

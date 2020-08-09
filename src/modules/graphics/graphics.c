@@ -368,6 +368,7 @@ void lovrGraphicsReset() {
   lovrGraphicsSetLineWidth(1.f);
   lovrGraphicsSetPointSize(1.f);
   lovrGraphicsSetShader(NULL);
+  lovrGraphicsDisableScissor();
   lovrGraphicsSetStencilTest(COMPARE_NONE, 0);
   lovrGraphicsSetWinding(WINDING_COUNTERCLOCKWISE);
   lovrGraphicsSetWireframe(false);
@@ -497,6 +498,38 @@ float lovrGraphicsGetPointSize() {
 
 void lovrGraphicsSetPointSize(float size) {
   state.pointSize = size;
+}
+
+void lovrGraphicsDisableScissor() {
+  state.pipeline.scissorXY = 0;
+  state.pipeline.scissorWH = 0;
+}
+
+bool lovrGraphicsIsScissorEnabled() {
+  return (state.pipeline.scissorXY | state.pipeline.scissorWH) > 0;
+}
+
+void lovrGraphicsSetScissorRect(int x, int y, int w, int h) {
+  /* If the scissor is off-screen, adjust it to be on-screen */
+  if (x < 0) {
+    w += x;
+    x = 0;
+  }
+  if (y < 0) {
+    h += y;
+    y = 0;
+  }
+
+  if (w <= 0 || h <= 0) {
+    /* replace parameters with values that won't conflict with 'no scissor test' value */
+    x = 1;
+    y = 1;
+    w = 0;
+    h = 0;
+  }
+
+  state.pipeline.scissorXY = (((uint32_t)MIN(x, 65535)) << 16) | (uint32_t)MIN(y, 65535);
+  state.pipeline.scissorWH = (((uint32_t)MIN(w, 65535)) << 16) | (uint32_t)MIN(h, 65535);
 }
 
 Shader* lovrGraphicsGetShader() {

@@ -71,6 +71,8 @@ typedef enum {
 
 typedef struct {
   float lineWidth;
+  uint32_t scissorXY;
+  uint32_t scissorWH;
   unsigned alphaSampling : 1;
   unsigned blendMode : 3; // BlendMode
   unsigned blendAlphaMode : 1; // BlendAlphaMode
@@ -130,6 +132,9 @@ float lovrGraphicsGetLineWidth(void);
 void lovrGraphicsSetLineWidth(float width);
 float lovrGraphicsGetPointSize(void);
 void lovrGraphicsSetPointSize(float size);
+void lovrGraphicsDisableScissor(void);
+bool lovrGraphicsIsScissorEnabled(void);
+void lovrGraphicsSetScissorRect(int x, int y, int w, int h);
 struct Shader* lovrGraphicsGetShader(void);
 void lovrGraphicsSetShader(struct Shader* shader);
 void lovrGraphicsGetStencilTest(CompareMode* mode, int* value);

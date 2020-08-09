@@ -748,6 +748,28 @@ static int l_lovrGraphicsSetPointSize(lua_State* L) {
   return 0;
 }
 
+static int l_lovrGraphicsDisableScissor(lua_State* L) {
+  lovrGraphicsDisableScissor();
+  return 0;
+}
+
+static int l_lovrGraphicsIsScissorEnabled(lua_State* L) {
+  lua_pushboolean(L, lovrGraphicsIsScissorEnabled());
+  return 1;
+}
+
+static int l_lovrGraphicsSetScissor(lua_State* L) {
+  if (lua_isnoneornil(L, 1)) {
+    return l_lovrGraphicsDisableScissor(L);
+  }
+  int x = luaL_checkinteger(L, 1);
+  int y = luaL_checkinteger(L, 2);
+  int w = luaL_checkinteger(L, 3);
+  int h = luaL_checkinteger(L, 4);
+  lovrGraphicsSetScissorRect(x, y, w, h);
+  return 0;
+}
+
 static int l_lovrGraphicsGetShader(lua_State* L) {
   Shader* shader = lovrGraphicsGetShader();
   luax_pushtype(L, Shader, shader);
@@ -1773,6 +1795,9 @@ static const luaL_Reg lovrGraphics[] = {
   { "setLineWidth", l_lovrGraphicsSetLineWidth },
   { "getPointSize", l_lovrGraphicsGetPointSize },
   { "setPointSize", l_lovrGraphicsSetPointSize },
+  { "disableScissor", l_lovrGraphicsDisableScissor },
+  { "isScissorEnabled", l_lovrGraphicsIsScissorEnabled },
+  { "setScissor", l_lovrGraphicsSetScissor },
   { "getShader", l_lovrGraphicsGetShader },
   { "setShader", l_lovrGraphicsSetShader },
   { "getStencilTest", l_lovrGraphicsGetStencilTest },
