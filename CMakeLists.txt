@@ -44,13 +44,21 @@ option(LOVR_USE_THREADLOCAL "Allow use of thread local storage; disable to run o
 
 # Setup
 if(EMSCRIPTEN)
+  if(LOVR_ENABLE_HEADSET)
+    string(CONCAT LOVR_MORE_EMSCRIPTEN_FLAGS
+      "-s \"EXPORTED_FUNCTIONS=['_main','_lovrDestroy','_webxr_attach','_webxr_detach','_lovrCanvasCreateFromHandle','_lovrCanvasDestroy','_lovrGraphicsSetBackbuffer','_lovrGraphicsSetViewMatrix','_lovrGraphicsSetProjection']\" "
+      "--js-library \"${CMAKE_CURRENT_SOURCE_DIR}/src/resources/webxr.js\" ")
+  else()
+    string(CONCAT LOVR_MORE_EMSCRIPTEN_FLAGS
+      "-s \"EXPORTED_FUNCTIONS=['_main','_lovrDestroy','_lovrCanvasCreateFromHandle','_lovrCanvasDestroy','_lovrGraphicsSetBackbuffer','_lovrGraphicsSetViewMatrix','_lovrGraphicsSetProjection']\" ")
+  endif()
+
   string(CONCAT LOVR_EMSCRIPTEN_FLAGS
     "-Os "
     "-s USE_WEBGL2=1 "
     "-s FORCE_FILESYSTEM=1 "
-    "-s \"EXPORTED_FUNCTIONS=['_main','_lovrDestroy','_webxr_attach','_webxr_detach','_lovrCanvasCreateFromHandle','_lovrCanvasDestroy','_lovrGraphicsSetBackbuffer','_lovrGraphicsSetViewMatrix','_lovrGraphicsSetProjection']\" "
+    "${LOVR_MORE_EMSCRIPTEN_FLAGS}"
     "-s \"EXTRA_EXPORTED_RUNTIME_METHODS=['getValue','setValue']\" "
-    "--js-library \"${CMAKE_CURRENT_SOURCE_DIR}/src/resources/webxr.js\" "
     "--shell-file \"${CMAKE_CURRENT_SOURCE_DIR}/src/resources/lovr.html\""
   )
   if(LOVR_ENABLE_THREAD)
