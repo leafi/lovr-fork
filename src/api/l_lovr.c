@@ -30,6 +30,9 @@ const luaL_Reg lovrModules[] = {
 #ifdef LOVR_ENABLE_MATH
   { "lovr.math", luaopen_lovr_math },
 #endif
+#ifdef LOVR_ENABLE_MOUSE
+  { "lovr.mouse", luaopen_lovr_mouse },
+#endif
 #ifdef LOVR_ENABLE_PHYSICS
   { "lovr.physics", luaopen_lovr_physics },
 #endif

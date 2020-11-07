@@ -30,6 +30,8 @@ static struct {
   windowFocusCallback onWindowFocus;
   windowResizeCallback onWindowResize;
   mouseButtonCallback onMouseButton;
+  mouseMoveCallback onMouseMove;
+  mouseScrollCallback onMouseScroll;
   keyboardCallback onKeyboardEvent;
   textCallback onTextEvent;
 } glfwState;
@@ -59,9 +61,27 @@ static void onWindowResize(GLFWwindow* window, int width, int height) {
 
 static void onMouseButton(GLFWwindow* window, int b, int a, int mods) {
   if (glfwState.onMouseButton && (b == GLFW_MOUSE_BUTTON_LEFT || b == GLFW_MOUSE_BUTTON_RIGHT)) {
-    MouseButton button = (b == GLFW_MOUSE_BUTTON_LEFT) ? MOUSE_LEFT : MOUSE_RIGHT;
+    MouseButton button = (b == GLFW_MOUSE_BUTTON_LEFT) ? MOUSE_LEFT : (b == GLFW_MOUSE_BUTTON_RIGHT) ? MOUSE_RIGHT : b;
     ButtonAction action = (a == GLFW_PRESS) ? BUTTON_PRESSED : BUTTON_RELEASED;
-    glfwState.onMouseButton(button, action);
+    double x = 0;
+    double y = 0;
+    /* (!) not converting from window to framebuffer scale */
+    glfwGetCursorPos(glfwState.window, &x, &y);
+    glfwState.onMouseButton(x, y, button, action);
+  }
+}
+
+static void onMouseMove(GLFWwindow* window, double x, double y) {
+  if (glfwState.onMouseMove) {
+    /* (!) not converting from window to framebuffer scale */
+    glfwState.onMouseMove(x, y);
+  }
+}
+
+static void onMouseScroll(GLFWwindow* window, double dx, double dy) {
+  if (glfwState.onMouseScroll) {
+    /* (!) not converting from window to framebuffer scale */
+    glfwState.onMouseScroll(dx, dy);
   }
 }
 
@@ -177,7 +197,19 @@ static int convertMouseButton(MouseButton button) {
   switch (button) {
     case MOUSE_LEFT: return GLFW_MOUSE_BUTTON_LEFT;
     case MOUSE_RIGHT: return GLFW_MOUSE_BUTTON_RIGHT;
-    default: lovrThrow("Unreachable");
+    default: return button;
+  }
+}
+
+static int convertMouseStandardCursor(MouseStandardCursor msc) {
+  switch (msc) {
+    case MOUSE_SC_ARROW: return GLFW_ARROW_CURSOR;
+    case MOUSE_SC_CROSSHAIR: return GLFW_CROSSHAIR_CURSOR;
+    case MOUSE_SC_HAND: return GLFW_HAND_CURSOR;
+    case MOUSE_SC_IBEAM: return GLFW_IBEAM_CURSOR;
+    case MOUSE_SC_SIZENS: return GLFW_VRESIZE_CURSOR;
+    case MOUSE_SC_SIZEWE: return GLFW_HRESIZE_CURSOR;
+    default: return -1;
   }
 }
 
@@ -266,6 +298,8 @@ bool lovrPlatformCreateWindow(const WindowFlags* flags) {
   glfwSetWindowFocusCallback(glfwState.window, onWindowFocus);
   glfwSetWindowSizeCallback(glfwState.window, onWindowResize);
   glfwSetMouseButtonCallback(glfwState.window, onMouseButton);
+  glfwSetCursorPosCallback(glfwState.window, onMouseMove);
+  glfwSetScrollCallback(glfwState.window, onMouseScroll);
   glfwSetKeyCallback(glfwState.window, onKeyboardEvent);
   glfwSetCharCallback(glfwState.window, onTextEvent);
   lovrPlatformSetSwapInterval(flags->vsync);
@@ -322,8 +356,16 @@ void lovrPlatformOnWindowResize(windowResizeCallback callback) {
   glfwState.onWindowResize = callback;
 }
 
-void lovrPlatformOnMouseButton(mouseButtonCallback callback) {
+void lovrPlatformOnMouseButtonEvent(mouseButtonCallback callback) {
   glfwState.onMouseButton = callback;
+}
+
+void lovrPlatformOnMouseMoveEvent(mouseMoveCallback callback) {
+  glfwState.onMouseMove = callback;
+}
+
+void lovrPlatformOnMouseScrollEvent(mouseScrollCallback callback) {
+  glfwState.onMouseScroll = callback;
 }
 
 void lovrPlatformOnKeyboardEvent(keyboardCallback callback) {
@@ -346,6 +388,40 @@ void lovrPlatformSetMouseMode(MouseMode mode) {
   if (glfwState.window) {
     int m = (mode == MOUSE_MODE_GRABBED) ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
     glfwSetInputMode(glfwState.window, GLFW_CURSOR, m);
+  }
+}
+
+void* lovrPlatformCreateMouseCursor(void* imgData, uint32_t imgWidth, uint32_t imgHeight, int hotX, int hotY) {
+  if (glfwState.window) {
+    GLFWimage img = (GLFWimage){
+      .height = (int)imgHeight,
+      .pixels = (unsigned char*)imgData,
+      .width = (int)imgWidth
+    };
+    return glfwCreateCursor(&img, hotX, hotY);
+  }
+  return NULL;
+}
+
+void* lovrPlatformCreateMouseStandardCursor(MouseStandardCursor msc) {
+  if (glfwState.window) {
+    int c = convertMouseStandardCursor(msc);
+    if (c >= 0) {
+      return glfwCreateStandardCursor(c);
+    }
+  }
+  return NULL;
+}
+
+void lovrPlatformDestroyMouseCursor(void* cursor) {
+  if (cursor) {
+    glfwDestroyCursor((GLFWcursor*)cursor);
+  }
+}
+
+void lovrPlatformSetMouseCursor(void* cursor) {
+  if (glfwState.window && cursor) {
+    glfwSetCursor(glfwState.window, (GLFWcursor*)cursor);
   }
 }
 

@@ -10,6 +10,7 @@ option(LOVR_ENABLE_FILESYSTEM "Enable the filesystem module" ON)
 option(LOVR_ENABLE_GRAPHICS "Enable the graphics module" ON)
 option(LOVR_ENABLE_HEADSET "Enable the headset module" ON)
 option(LOVR_ENABLE_MATH "Enable the math module" ON)
+option(LOVR_ENABLE_MOUSE "Enable the mouse module" ON)
 option(LOVR_ENABLE_PHYSICS "Enable the physics module" ON)
 option(LOVR_ENABLE_THREAD "Enable the thread module" ON)
 option(LOVR_ENABLE_TIMER "Enable the timer module" ON)
@@ -442,6 +443,13 @@ if(LOVR_ENABLE_DATA)
     src/lib/stb/stb_truetype.c
     src/lib/stb/stb_vorbis.c
     src/lib/jsmn/jsmn.c
+  )
+endif()
+
+if(LOVR_ENABLE_MOUSE)
+  add_definitions(-DLOVR_ENABLE_MOUSE)
+  target_sources(lovr PRIVATE
+    src/api/l_mouse.c
   )
 endif()
 

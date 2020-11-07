@@ -14,6 +14,7 @@ static struct {
   windowFocusCallback onWindowFocus;
   windowResizeCallback onWindowResize;
   mouseButtonCallback onMouseButton;
+  mouseMoveCallback onMouseMove;
   keyboardCallback onKeyboardEvent;
   bool keyMap[KEY_COUNT];
   bool mouseMap[2];
@@ -71,7 +72,7 @@ static EM_BOOL onMouseButton(int type, const EmscriptenMouseEvent* data, void* u
   state.mouseMap[button] = action == BUTTON_PRESSED;
 
   if (state.onMouseButton) {
-    state.onMouseButton(button, action);
+    state.onMouseButton((double)state.mouseX, (double)state.mouseY, button, action);
   }
 
   return false;
@@ -85,6 +86,11 @@ static EM_BOOL onMouseMove(int type, const EmscriptenMouseEvent* data, void* use
     state.mouseX = data->clientX;
     state.mouseY = data->clientY;
   }
+
+  if (state.onMouseMove) {
+    state.onMouseMove((double)state.mouseX, (double)state.mouseY);
+  }
+
   return false;
 }
 
@@ -327,8 +333,16 @@ void lovrPlatformOnWindowResize(windowResizeCallback callback) {
   state.onWindowResize = callback;
 }
 
-void lovrPlatformOnMouseButton(mouseButtonCallback callback) {
+void lovrPlatformOnMouseButtonEvent(mouseButtonCallback callback) {
   state.onMouseButton = callback;
+}
+
+void lovrPlatformOnMouseMoveEvent(mouseMoveCallback callback) {
+  state.onMouseMove = callback;
+}
+
+void lovrPlatformOnMouseScrollEvent(mouseScrollCallback callback) {
+  //
 }
 
 void lovrPlatformOnKeyboardEvent(keyboardCallback callback) {
@@ -353,6 +367,22 @@ void lovrPlatformSetMouseMode(MouseMode mode) {
       EM_ASM(document.exitPointerLock());
     }
   }
+}
+
+void* lovrPlatformCreateMouseCursor(void* imgData, uint32_t imgWidth, uint32_t imgHeight, int hotX, int hotY) {
+  return NULL;
+}
+
+void* lovrPlatformCreateMouseStandardCursor(MouseStandardCursor msc) {
+  return NULL;
+}
+
+void lovrPlatformDestroyMouseCursor(void* cursor) {
+  //
+}
+
+void lovrPlatformSetMouseCursor(void* cursor) {
+  //
 }
 
 bool lovrPlatformIsMouseDown(MouseButton button) {

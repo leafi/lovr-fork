@@ -108,6 +108,7 @@ function lovr.boot()
       graphics = true,
       headset = true,
       math = true,
+      mouse = true,
       physics = true,
       thread = true,
       timer = true
