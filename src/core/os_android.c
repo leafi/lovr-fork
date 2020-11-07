@@ -442,7 +442,15 @@ void lovrPlatformOnWindowResize(windowResizeCallback callback) {
   //
 }
 
-void lovrPlatformOnMouseButton(mouseButtonCallback callback) {
+void lovrPlatformOnMouseButtonEvent(mouseButtonCallback callback) {
+  //
+}
+
+void lovrPlatformOnMouseMoveEvent(mouseMoveCallback callback) {
+  //
+}
+
+void lovrPlatformOnMouseScrollEvent(mouseScrollCallback callback) {
   //
 }
 
@@ -459,6 +467,22 @@ void lovrPlatformGetMousePosition(double* x, double* y) {
 }
 
 void lovrPlatformSetMouseMode(MouseMode mode) {
+  //
+}
+
+void* lovrPlatformCreateMouseCursor(void* imgData, uint32_t imgWidth, uint32_t imgHeight, int hotX, int hotY) {
+  return NULL;
+}
+
+void* lovrPlatformCreateMouseStandardCursor(MouseStandardCursor msc) {
+  return NULL;
+}
+
+void lovrPlatformDestroyMouseCursor(void* cursor) {
+  //
+}
+
+void lovrPlatformSetMouseCursor(void* cursor) {
   //
 }
 

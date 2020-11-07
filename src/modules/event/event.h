@@ -12,6 +12,10 @@ typedef enum {
   EVENT_RESTART,
   EVENT_FOCUS,
   EVENT_RESIZE,
+  EVENT_MOUSEMOVED,
+  EVENT_MOUSEPRESSED,
+  EVENT_MOUSERELEASED,
+  EVENT_MOUSESCROLLED,
   EVENT_KEYPRESSED,
   EVENT_KEYRELEASED,
   EVENT_TEXTINPUT,
@@ -65,6 +69,24 @@ typedef struct {
 } KeyEvent;
 
 typedef struct {
+  double x;
+  double y;
+  int button;
+} MouseButtonEvent;
+
+typedef struct {
+  double x;
+  double y;
+  double dx;
+  double dy;
+} MouseMoveEvent;
+
+typedef struct {
+  double dx;
+  double dy;
+} MouseScrollEvent;
+
+typedef struct {
   char utf8[4];
   uint32_t codepoint;
 } TextEvent;
@@ -85,6 +107,9 @@ typedef union {
   BoolEvent boolean;
   ResizeEvent resize;
   KeyEvent key;
+  MouseButtonEvent mouseButton;
+  MouseMoveEvent mouseMove;
+  MouseScrollEvent mouseScroll;
   TextEvent text;
   ThreadEvent thread;
   CustomEvent custom;

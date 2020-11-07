@@ -12,6 +12,10 @@ StringEntry lovrEventType[] = {
   [EVENT_RESTART] = ENTRY("restart"),
   [EVENT_FOCUS] = ENTRY("focus"),
   [EVENT_RESIZE] = ENTRY("resize"),
+  [EVENT_MOUSEMOVED] = ENTRY("mousemoved"),
+  [EVENT_MOUSEPRESSED] = ENTRY("mousepressed"),
+  [EVENT_MOUSERELEASED] = ENTRY("mousereleased"),
+  [EVENT_MOUSESCROLLED] = ENTRY("mousescrolled"),
   [EVENT_KEYPRESSED] = ENTRY("keypressed"),
   [EVENT_KEYRELEASED] = ENTRY("keyreleased"),
   [EVENT_TEXTINPUT] = ENTRY("textinput"),
@@ -202,6 +206,30 @@ static int nextEvent(lua_State* L) {
     case EVENT_RESIZE:
       lua_pushinteger(L, event.data.resize.width);
       lua_pushinteger(L, event.data.resize.height);
+      return 3;
+
+    case EVENT_MOUSEMOVED:
+      lua_pushnumber(L, event.data.mouseMove.x);
+      lua_pushnumber(L, event.data.mouseMove.y);
+      lua_pushnumber(L, event.data.mouseMove.dx);
+      lua_pushnumber(L, event.data.mouseMove.dy);
+      return 5;
+
+    case EVENT_MOUSEPRESSED:
+      lua_pushnumber(L, event.data.mouseButton.x);
+      lua_pushnumber(L, event.data.mouseButton.y);
+      lua_pushinteger(L, event.data.mouseButton.button + 1);
+      return 4;
+
+    case EVENT_MOUSERELEASED:
+      lua_pushnumber(L, event.data.mouseButton.x);
+      lua_pushnumber(L, event.data.mouseButton.y);
+      lua_pushinteger(L, event.data.mouseButton.button + 1);
+      return 4;
+
+    case EVENT_MOUSESCROLLED:
+      lua_pushnumber(L, event.data.mouseScroll.dx);
+      lua_pushnumber(L, event.data.mouseScroll.dy);
       return 3;
 
     case EVENT_KEYPRESSED:

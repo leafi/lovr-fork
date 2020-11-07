@@ -14,6 +14,7 @@ echo ===
 mkdir -p build/desktop
 pushd build/desktop >/dev/null
 cmake ../.. \
+    -DLOVR_ENABLE_MOUSE=ON \
     -DLOVR_ENABLE_HEADSET=OFF \
     -DLOVR_ENABLE_ENET=OFF \
     -DLOVR_ENABLE_XXHASH=ON \
@@ -30,6 +31,7 @@ echo ===
 mkdir -p build/miniweb
 pushd build/miniweb >/dev/null
 emcmake cmake ../.. \
+    -DLOVR_ENABLE_MOUSE=ON \
     -DLOVR_ENABLE_HEADSET=OFF \
     -DLOVR_ENABLE_ENET=OFF \
     -DLOVR_ENABLE_XXHASH=ON \
@@ -46,6 +48,7 @@ echo ===
 mkdir -p build/web
 pushd build/web >/dev/null
 emcmake cmake ../.. \
+    -DLOVR_ENABLE_MOUSE=ON \
     -DLOVR_ENABLE_HEADSET=OFF \
     -DLOVR_ENABLE_ENET=OFF \
     -DLOVR_ENABLE_XXHASH=ON \

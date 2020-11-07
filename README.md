@@ -6,6 +6,7 @@
 - Bundled lutf8lib.h from lua-compat-5.3: utf8 lib (like Lua 5.3) added
 - Bundled LuaBitOp (bit32) ONLY when using Lua 5.1 interpreter
 - Added lovr.graphics.disableScissor(), lovr.graphics.isScissorEnabled, lovr.graphics.setScissor(x,y,w,h)
+- Ported a chunk of lovr-mouse.lua as a new C module 'lovr.mouse' (events: mousepressed, mousereleased, mousescrolled, lovr.mouse methods: destroyCursor, getPosition, getSystemCursor (params arrow|crosshair|hand|ibeam|sizens|sizewe), isDown, newCursor (taking TextureData, hotX, hotY), setCursor, setRelativeMode)
 - Add rebuild.sh with the settings I wish to use (disable vr & enet)
 - ???
 

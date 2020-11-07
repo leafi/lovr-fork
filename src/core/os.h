@@ -26,6 +26,15 @@ typedef enum {
 } MouseButton;
 
 typedef enum {
+  MOUSE_SC_ARROW,
+  MOUSE_SC_CROSSHAIR,
+  MOUSE_SC_HAND,
+  MOUSE_SC_IBEAM,
+  MOUSE_SC_SIZENS,
+  MOUSE_SC_SIZEWE
+} MouseStandardCursor;
+
+typedef enum {
   MOUSE_MODE_NORMAL,
   MOUSE_MODE_GRABBED
 } MouseMode;
@@ -132,7 +141,9 @@ typedef enum {
 typedef void (*quitCallback)(void);
 typedef void (*windowFocusCallback)(bool focused);
 typedef void (*windowResizeCallback)(int width, int height);
-typedef void (*mouseButtonCallback)(MouseButton button, ButtonAction action);
+typedef void (*mouseButtonCallback)(double x, double y, MouseButton button, ButtonAction action);
+typedef void (*mouseMoveCallback)(double x, double y);
+typedef void (*mouseScrollCallback)(double dx, double dy);
 typedef void (*keyboardCallback)(ButtonAction action, KeyCode key, uint32_t scancode, bool repeat);
 typedef void (*textCallback)(uint32_t codepoint);
 
@@ -159,10 +170,16 @@ void* lovrPlatformGetProcAddress(const char* function);
 void lovrPlatformOnQuitRequest(quitCallback callback);
 void lovrPlatformOnWindowFocus(windowFocusCallback callback);
 void lovrPlatformOnWindowResize(windowResizeCallback callback);
-void lovrPlatformOnMouseButton(mouseButtonCallback callback);
+void lovrPlatformOnMouseButtonEvent(mouseButtonCallback callback);
+void lovrPlatformOnMouseMoveEvent(mouseMoveCallback callback);
+void lovrPlatformOnMouseScrollEvent(mouseScrollCallback callback);
 void lovrPlatformOnKeyboardEvent(keyboardCallback callback);
 void lovrPlatformOnTextEvent(textCallback callback);
 void lovrPlatformGetMousePosition(double* x, double* y);
 void lovrPlatformSetMouseMode(MouseMode mode);
+void* lovrPlatformCreateMouseCursor(void* imgData, uint32_t imgWidth, uint32_t imgHeight, int hotX, int hotY);
+void* lovrPlatformCreateMouseStandardCursor(MouseStandardCursor msc);
+void lovrPlatformDestroyMouseCursor(void* cursor);
+void lovrPlatformSetMouseCursor(void* cursor);
 bool lovrPlatformIsMouseDown(MouseButton button);
 bool lovrPlatformIsKeyDown(KeyCode key);

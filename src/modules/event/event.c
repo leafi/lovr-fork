@@ -14,12 +14,47 @@ static struct {
   size_t head;
 } state;
 
+static double last_mouse_x = 0;
+static double last_mouse_y = 0;
+
 static void onKeyboardEvent(ButtonAction action, KeyCode key, uint32_t scancode, bool repeat) {
   lovrEventPush((Event) {
     .type = action == BUTTON_PRESSED ? EVENT_KEYPRESSED : EVENT_KEYRELEASED,
     .data.key.code = key,
     .data.key.scancode = scancode,
     .data.key.repeat = repeat
+  });
+}
+
+static void onMouseButtonEvent(double x, double y, MouseButton button, ButtonAction action) {
+  lovrEventPush((Event) {
+    .type = action == BUTTON_PRESSED ? EVENT_MOUSEPRESSED : EVENT_MOUSERELEASED,
+    .data.mouseButton.button = button + 1,
+    .data.mouseButton.x = x,
+    .data.mouseButton.y = y
+  });
+}
+
+static void onMouseMoveEvent(double x, double y) {
+  double dx = x - last_mouse_x;
+  double dy = y - last_mouse_y;
+  last_mouse_x = x;
+  last_mouse_y = y;
+
+  lovrEventPush((Event) {
+    .type = EVENT_MOUSEMOVED,
+    .data.mouseMove.dx = dx,
+    .data.mouseMove.dy = dy,
+    .data.mouseMove.x = x,
+    .data.mouseMove.y = y
+  });
+}
+
+static void onMouseScrollEvent(double dx, double dy) {
+  lovrEventPush((Event) {
+    .type = EVENT_MOUSESCROLLED,
+    .data.mouseScroll.dx = dx,
+    .data.mouseScroll.dy = dy
   });
 }
 
@@ -43,6 +78,9 @@ void lovrVariantDestroy(Variant* variant) {
 bool lovrEventInit() {
   if (state.initialized) return false;
   arr_init(&state.events);
+  lovrPlatformOnMouseButtonEvent(onMouseButtonEvent);
+  lovrPlatformOnMouseMoveEvent(onMouseMoveEvent);
+  lovrPlatformOnMouseScrollEvent(onMouseScrollEvent);
   lovrPlatformOnKeyboardEvent(onKeyboardEvent);
   lovrPlatformOnTextEvent(onTextEvent);
   return state.initialized = true;
@@ -65,6 +103,9 @@ void lovrEventDestroy() {
     }
   }
   arr_free(&state.events);
+  lovrPlatformOnMouseButtonEvent(NULL);
+  lovrPlatformOnMouseMoveEvent(NULL);
+  lovrPlatformOnMouseScrollEvent(NULL);
   lovrPlatformOnKeyboardEvent(NULL);
   lovrPlatformOnTextEvent(NULL);
   memset(&state, 0, sizeof(state));
