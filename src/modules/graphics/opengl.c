@@ -1687,6 +1687,28 @@ const GpuStats* lovrGpuGetStats() {
   return &state.stats;
 }
 
+// Big ol' GPU fence (for manual frame pacing)
+
+unsigned int lovrGpuClientWaitSync(void* fence) {
+  GLsync sync = (GLsync)fence;
+  /* timeout: 200ms */
+  return glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 2000000000);
+}
+
+void lovrGpuDeleteSync(void* fence) {
+  GLsync sync = (GLsync)fence;
+  glDeleteSync(sync);
+}
+
+void* lovrGpuFenceSync(void) {
+  return (void*)glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+}
+
+void lovrGpuWaitSync(void* fence) {
+  GLsync sync = (GLsync)fence;
+  glWaitSync(sync, 0, GL_TIMEOUT_IGNORED);
+}
+
 // Texture
 
 Texture* lovrTextureCreate(TextureType type, TextureData** slices, uint32_t sliceCount, bool srgb, bool mipmaps, uint32_t msaa) {

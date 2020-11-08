@@ -578,6 +578,44 @@ static int l_lovrGraphicsGetStats(lua_State* L) {
   return 1;
 }
 
+// GPU fence fun (frame pacing etc.)
+
+static int l_lovrGraphicsClientWaitSync(lua_State* L) {
+  void* fence = lua_touserdata(L, 1);
+  if (!fence) {
+    return luaL_argerror(L, 1, "expected gpu fence lightuserdata");
+  }
+  lua_pushinteger(L, lovrGpuClientWaitSync(fence));
+  return 1;
+}
+
+static int l_lovrGraphicsDeleteSync(lua_State* L) {
+  void* fence = lua_touserdata(L, 1);
+  if (!fence) {
+    return luaL_argerror(L, 1, "expected gpu fence lightuserdata");
+  }
+  lovrGpuDeleteSync(fence);
+  return 0;
+}
+
+static int l_lovrGraphicsFenceSync(lua_State* L) {
+  /* submit all current batches */
+  lovrGraphicsFlush();
+
+  void* fence = lovrGpuFenceSync();
+  lua_pushlightuserdata(L, fence);
+  return 1;
+}
+
+static int l_lovrGraphicsWaitSync(lua_State* L) {
+  void* fence = lua_touserdata(L, 1);
+  if (!fence) {
+    return luaL_argerror(L, 1, "expected gpu fence lightuserdata");
+  }
+  lovrGpuWaitSync(fence);
+  return 0;
+}
+
 // State
 
 static int l_lovrGraphicsReset(lua_State* L) {
@@ -1768,6 +1806,12 @@ static const luaL_Reg lovrGraphics[] = {
   { "getFeatures", l_lovrGraphicsGetFeatures },
   { "getLimits", l_lovrGraphicsGetLimits },
   { "getStats", l_lovrGraphicsGetStats },
+
+  // GPU fence fun (mostly for manual frame pacing)
+  { "clientWaitSync", l_lovrGraphicsClientWaitSync },
+  { "deleteSync", l_lovrGraphicsDeleteSync },
+  { "fenceSync", l_lovrGraphicsFenceSync },
+  { "waitSync", l_lovrGraphicsWaitSync },
 
   // State
   { "reset", l_lovrGraphicsReset },

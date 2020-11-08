@@ -177,6 +177,11 @@ void lovrGraphicsDrawMesh(struct Mesh* mesh, mat4 transform, uint32_t instances,
 #define lovrGraphicsStencil lovrGpuStencil
 #define lovrGraphicsCompute lovrGpuCompute
 
+#define lovrGraphicsClientWaitSync lovrGpuClientWaitSync
+#define lovrGraphicsDeleteSync lovrGpuDeleteSync
+#define lovrGraphicsFenceSync lovrGpuFenceSync
+#define lovrGraphicsWaitSync lovrGpuWaitSync
+
 // GPU
 
 typedef struct {
@@ -234,3 +239,8 @@ double lovrGpuTock(const char* label);
 const GpuFeatures* lovrGpuGetFeatures(void);
 const GpuLimits* lovrGpuGetLimits(void);
 const GpuStats* lovrGpuGetStats(void);
+
+unsigned int lovrGpuClientWaitSync(void* fence);
+void lovrGpuDeleteSync(void* fence);
+void* lovrGpuFenceSync(void);
+void lovrGpuWaitSync(void* fence);

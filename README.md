@@ -7,6 +7,7 @@
 - Bundled LuaBitOp (bit32) ONLY when using Lua 5.1 interpreter
 - Added lovr.graphics.disableScissor(), lovr.graphics.isScissorEnabled, lovr.graphics.setScissor(x,y,w,h)
 - Ported a chunk of lovr-mouse.lua as a new C module 'lovr.mouse' (events: mousepressed, mousereleased, mousescrolled, lovr.mouse methods: destroyCursor, getPosition, getSystemCursor (params arrow|crosshair|hand|ibeam|sizens|sizewe), isDown, newCursor (taking TextureData, hotX, hotY), setCursor, setRelativeMode)
+- Added lovr.graphics.clientWaitSync, lovr.graphics.deleteSync, lovr.graphics.fenceSync, lovr.graphics.waitSync for enforcing low latency in desktop mouse scenarios
 - Add rebuild.sh with the settings I wish to use (disable vr & enet)
 - ???
 
