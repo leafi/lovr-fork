@@ -87,7 +87,7 @@ typedef struct {
 } Pipeline;
 
 // Base
-bool lovrGraphicsInit(bool debug);
+bool lovrGraphicsInit(bool debug, bool singlebuffer);
 void lovrGraphicsDestroy(void);
 void lovrGraphicsPresent(void);
 void lovrGraphicsCreateWindow(WindowFlags* flags);
@@ -234,3 +234,6 @@ double lovrGpuTock(const char* label);
 const GpuFeatures* lovrGpuGetFeatures(void);
 const GpuLimits* lovrGpuGetLimits(void);
 const GpuStats* lovrGpuGetStats(void);
+
+void lovrGpuFlush(void);
+unsigned int lovrGpuSetWaitFence1(void);

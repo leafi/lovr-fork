@@ -93,6 +93,7 @@ typedef struct {
 static struct {
   bool initialized;
   bool debug;
+  bool singlebuffer;
   int width;
   int height;
   Canvas* backbuffer;
@@ -189,8 +190,9 @@ static void* lovrGraphicsMapBuffer(StreamType type, uint32_t count) {
 
 // Base
 
-bool lovrGraphicsInit(bool debug) {
+bool lovrGraphicsInit(bool debug, bool singlebuffer) {
   state.debug = debug;
+  state.singlebuffer = singlebuffer;
   return false; // See lovrGraphicsCreateWindow for actual initialization
 }
 
@@ -218,12 +220,17 @@ void lovrGraphicsDestroy() {
 
 void lovrGraphicsPresent() {
   lovrGraphicsFlush();
+  if (state.singlebuffer) {
+    /* SwapBuffers will do nothing, so must flush */
+    lovrGpuFlush();
+  }
   lovrPlatformSwapBuffers();
   lovrGpuPresent();
 }
 
 void lovrGraphicsCreateWindow(WindowFlags* flags) {
   flags->debug = state.debug;
+  flags->singlebuffer = state.singlebuffer;
   lovrAssert(!state.initialized, "Window is already created");
   lovrAssert(lovrPlatformCreateWindow(flags), "Could not create window");
   lovrPlatformSetSwapInterval(flags->vsync); // Force vsync in case lovr.headset changed it in a previous restart

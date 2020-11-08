@@ -193,6 +193,7 @@ static struct {
   arr_t(Timer) timers;
   uint32_t activeTimer;
   map_t timerMap;
+  GLsync fence1;
   GpuFeatures features;
   GpuLimits limits;
   GpuStats stats;
@@ -3110,4 +3111,27 @@ void lovrMeshSetMaterial(Mesh* mesh, Material* material) {
   lovrRetain(material);
   lovrRelease(Material, mesh->material);
   mesh->material = material;
+}
+
+void lovrGpuFlush(void) {
+  glFlush();
+}
+
+unsigned int lovrGpuSetWaitFence1(void) {
+  /*
+  if (state.fence1 != NULL) {
+    glDeleteSync(state.fence1);
+    state.fence1 = NULL;
+  }
+  */
+
+  state.fence1 = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+  glFlush();
+
+  GLenum e = glClientWaitSync(state.fence1, 0, 1000000000);
+
+  glDeleteSync(state.fence1);
+  state.fence1 = NULL;
+
+  return e;
 }

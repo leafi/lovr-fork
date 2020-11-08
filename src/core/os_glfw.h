@@ -241,6 +241,9 @@ bool lovrPlatformCreateWindow(const WindowFlags* flags) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags->debug);
+  if (flags->singlebuffer) {
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+  }
   /* Doesn't work with glfw3/Intel GL driver available in Ubuntu 18.04 repos */
   /*
   glfwWindowHint(GLFW_CONTEXT_NO_ERROR, !flags->debug);

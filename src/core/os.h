@@ -10,6 +10,7 @@ typedef struct {
   bool fullscreen;
   bool resizable;
   bool debug;
+  bool singlebuffer;
   int vsync;
   int msaa;
   const char* title;
