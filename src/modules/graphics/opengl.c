@@ -193,7 +193,6 @@ static struct {
   arr_t(Timer) timers;
   uint32_t activeTimer;
   map_t timerMap;
-  GLsync fence1;
   GpuFeatures features;
   GpuLimits limits;
   GpuStats stats;
@@ -1688,6 +1687,24 @@ const GpuStats* lovrGpuGetStats() {
   return &state.stats;
 }
 
+void lovrGpuFlush(GpuFlushType flushType) {
+  GLsync fence;
+
+  switch (flushType) {
+    case GPU_FLUSH_GLFLUSH:
+      glFlush();
+      break;
+    case GPU_FLUSH_GLFINISH:
+      glFinish();
+      break;
+    case GPU_FLUSH_FENCE_AND_WAIT:
+      fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+      glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+      glDeleteSync(fence);
+      break;
+  }
+}
+
 // Texture
 
 Texture* lovrTextureCreate(TextureType type, TextureData** slices, uint32_t sliceCount, bool srgb, bool mipmaps, uint32_t msaa) {
@@ -3111,27 +3128,4 @@ void lovrMeshSetMaterial(Mesh* mesh, Material* material) {
   lovrRetain(material);
   lovrRelease(Material, mesh->material);
   mesh->material = material;
-}
-
-void lovrGpuFlush(void) {
-  glFlush();
-}
-
-unsigned int lovrGpuSetWaitFence1(void) {
-  /*
-  if (state.fence1 != NULL) {
-    glDeleteSync(state.fence1);
-    state.fence1 = NULL;
-  }
-  */
-
-  state.fence1 = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-  glFlush();
-
-  GLenum e = glClientWaitSync(state.fence1, 0, 1000000000);
-
-  glDeleteSync(state.fence1);
-  state.fence1 = NULL;
-
-  return e;
 }

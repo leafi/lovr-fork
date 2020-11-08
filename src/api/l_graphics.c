@@ -16,8 +16,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static bool presentLatencyHack = false;
-
 StringEntry lovrArcMode[] = {
   [ARC_MODE_PIE] = ENTRY("pie"),
   [ARC_MODE_OPEN] = ENTRY("open"),
@@ -142,6 +140,14 @@ StringEntry lovrMaterialTexture[] = {
   [TEXTURE_ROUGHNESS] = ENTRY("roughness"),
   [TEXTURE_OCCLUSION] = ENTRY("occlusion"),
   [TEXTURE_NORMAL] = ENTRY("normal"),
+  { 0 }
+};
+
+StringEntry lovrPresentStrategy[] = {
+  [PRESENT_STRATEGY_SIMPLE] = ENTRY("simple"),
+  [PRESENT_STRATEGY_GLFINISH] = ENTRY("glfinish"),
+  [PRESENT_STRATEGY_FENCE] = ENTRY("fence"),
+  [PRESENT_STRATEGY_FENCE_GLFINISH] = ENTRY("fenceglfinish"),
   { 0 }
 };
 
@@ -323,45 +329,8 @@ static TextureData* luax_checktexturedata(lua_State* L, int index, bool flip) {
 // Base
 
 static int l_lovrGraphicsPresent(lua_State* L) {
-  lovrGraphicsPresent();
-
-  if (presentLatencyHack) {
-    // render tiny geom
-    // mat4 identity_mat = (mat4)MAT4_IDENTITY;
-    // lovrGraphicsBox(STYLE_FILL, NULL, identity_mat);
-    Color c = lovrGraphicsGetBackgroundColor();
-    float vertices[16] = {
-      1.f,
-      1.f,
-      1.f,
-      0.f,
-      0.f,
-      0.f,
-      0.f,
-      0.f,
-      2.f,
-      2.f,
-      1.f,
-      0.f,
-      0.f,
-      0.f,
-      0.f,
-      0.f
-    };
-    lovrGraphicsLine(2, &vertices);
-    // lovrGraphicsClear(&c, NULL, NULL);
-    lovrGraphicsFlush();
-
-    // insert gpu fence & wait until fence complete
-    lua_pushinteger(L, lovrGpuSetWaitFence1());
-    return 1;
-  }
-
-  return 0;
-}
-
-static int l_lovrGraphicsSetPresentLatencyHack(lua_State* L) {
-  presentLatencyHack = lua_toboolean(L, 1);
+  PresentStrategy strategy = luax_checkenum(L, 1, PresentStrategy, "simple");
+  lovrGraphicsPresent(strategy);
   return 0;
 }
 
@@ -1793,7 +1762,6 @@ static const luaL_Reg lovrGraphics[] = {
 
   // Base
   { "present", l_lovrGraphicsPresent },
-  { "setPresentLatencyHack", l_lovrGraphicsSetPresentLatencyHack },
   { "createWindow", l_lovrGraphicsCreateWindow },
   { "getWidth", l_lovrGraphicsGetWidth },
   { "getHeight", l_lovrGraphicsGetHeight },

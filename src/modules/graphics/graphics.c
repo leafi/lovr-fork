@@ -218,14 +218,34 @@ void lovrGraphicsDestroy() {
   memset(&state, 0, sizeof(state));
 }
 
-void lovrGraphicsPresent() {
+void lovrGraphicsPresent(PresentStrategy strategy) {
   lovrGraphicsFlush();
+
   if (state.singlebuffer) {
-    /* SwapBuffers will do nothing, so must flush */
-    lovrGpuFlush();
+    /* SwapBuffers does nothing, so must flush in this case */
+    lovrGpuFlush(GPU_FLUSH_GLFLUSH);
   }
+
+  /* typical 'finish frame' flow */
   lovrPlatformSwapBuffers();
   lovrGpuPresent();
+
+  if ((strategy == PRESENT_STRATEGY_FENCE) || (strategy == PRESENT_STRATEGY_FENCE_GLFINISH)) {
+    // 1. render tiny geometry
+    Color c = lovrGraphicsGetBackgroundColor();
+    float vertices[16] = {1.f, 1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 2.f, 2.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+    float* vptr = (float*)vertices;
+    lovrGraphicsLine(2, &vptr);
+    // (finish & submit batch)
+    lovrGraphicsFlush();
+
+    // 2. insert gpu fence & wait for fence (w/auto-glFlush)
+    lovrGpuFlush(GPU_FLUSH_FENCE_AND_WAIT);
+  }
+
+  if ((strategy == PRESENT_STRATEGY_GLFINISH) || (strategy == PRESENT_STRATEGY_FENCE_GLFINISH)) {
+    lovrGpuFlush(GPU_FLUSH_GLFINISH);
+  }
 }
 
 void lovrGraphicsCreateWindow(WindowFlags* flags) {

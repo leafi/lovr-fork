@@ -86,10 +86,17 @@ typedef struct {
   unsigned wireframe : 1;
 } Pipeline;
 
+typedef enum {
+  PRESENT_STRATEGY_SIMPLE,
+  PRESENT_STRATEGY_GLFINISH,
+  PRESENT_STRATEGY_FENCE,
+  PRESENT_STRATEGY_FENCE_GLFINISH
+} PresentStrategy;
+
 // Base
 bool lovrGraphicsInit(bool debug, bool singlebuffer);
 void lovrGraphicsDestroy(void);
-void lovrGraphicsPresent(void);
+void lovrGraphicsPresent(PresentStrategy strategy);
 void lovrGraphicsCreateWindow(WindowFlags* flags);
 int lovrGraphicsGetWidth(void);
 int lovrGraphicsGetHeight(void);
@@ -219,6 +226,12 @@ typedef struct {
   uint32_t instances;
 } DrawCommand;
 
+typedef enum {
+  GPU_FLUSH_GLFLUSH,
+  GPU_FLUSH_GLFINISH,
+  GPU_FLUSH_FENCE_AND_WAIT
+} GpuFlushType;
+
 void lovrGpuInit(void* (*getProcAddress)(const char*), bool debug);
 void lovrGpuDestroy(void);
 void lovrGpuClear(struct Canvas* canvas, Color* color, float* depth, int* stencil);
@@ -235,5 +248,4 @@ const GpuFeatures* lovrGpuGetFeatures(void);
 const GpuLimits* lovrGpuGetLimits(void);
 const GpuStats* lovrGpuGetStats(void);
 
-void lovrGpuFlush(void);
-unsigned int lovrGpuSetWaitFence1(void);
+void lovrGpuFlush(GpuFlushType flushType);
