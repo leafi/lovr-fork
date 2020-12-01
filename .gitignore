@@ -34,6 +34,7 @@ bin
 /*.lua
 .DS_Store
 .vs
+.vscode
 /test
 deps/VrApi
 deps/pico
